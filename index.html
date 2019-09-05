@@ -157,24 +157,55 @@
                             "," +
                             Math.floor(255 - 42.5 * j) +
                             ",0)";
-                        ctx.fillRect(j * 50+300, i * 50+260, 50, 50);
+                        ctx.fillRect(j * 50 + 300, i * 50 + 260, 50, 50);
                     }
                 }
             }
-                    function randomInt(from, to){
-            return parseInt(Math.random() * (to - from + 1) + from);
-        }
-
-            function draw2(){
-
-
-        for (var i = 0; i < 6; i++){
-            for (var j = 0; j < 6; j++){
-                ctx.strokeStyle = `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
-                ctx.strokeRect(j * 50+300, i * 50+600, 40, 40);
+            function randomInt(from, to) {
+                return parseInt(Math.random() * (to - from + 1) + from);
             }
-        }
-    }
+
+            function draw2() {
+                for (var i = 0; i < 6; i++) {
+                    for (var j = 0; j < 6; j++) {
+                        ctx.strokeStyle = `rgb(${randomInt(0, 255)},${randomInt(
+                            0,
+                            255
+                        )},${randomInt(0, 255)})`;
+                        ctx.strokeRect(j * 50 + 300, i * 50 + 600, 40, 40);
+                    }
+                }
+            }
+
+            //绘制文本
+            function drawText(){
+                ctx.font = "100px sans-serif"
+                ctx.fillText("滚滚长江东逝水", 10, 1000);
+                ctx.strokeText("滚滚长江东逝水", 10, 1120)
+            }
+
+
+            // 绘制图片
+            function drawImg(){
+              var img = new Image();   // 创建一个<img>元素
+              img.src = 'static/images/zxc.png'; // 设置图片源地址
+              img.onload = function(){
+                ctx.drawImage(img, 10, 1200,500,300)
+                let parm = [
+                  230,
+                  100,
+                  200,
+                  200,
+                  550,
+                  1200,
+                  100,
+                  100
+                ];
+                //裁剪
+                ctx.drawImage(img,...parm);
+
+              }
+            }
 
             drawRect(20, 20, 100, 50);
             drawRectLine(150, 20, 100, 50);
@@ -188,6 +219,8 @@
             drawBsr3();
             draw();
             draw2();
+            drawText();
+            drawImg();
         </script>
     </body>
 </html>
