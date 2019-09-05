@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>canvas</title>
+    </head>
+    <body>
+        <canvas
+            style="border: 1px solid red"
+            width="1200"
+            height="8000"
+            id="tutorial"
+        >
+        </canvas>
+        <script>
+            var i = 10;
+            var canvas = document.getElementById("tutorial");
+            var ctx = canvas.getContext("2d");
+
+            //绘制填充矩形
+            function drawRect(x, y, w, h, color = "#3399FF") {
+                ctx.fillStyle = color;
+                // 绘制矩形
+                ctx.fillRect(x, y, w, h);
+            }
+
+            // 绘制无填充矩形
+            function drawRectLine(x, y, w, h) {
+                ctx.strokeRect(x, y, w, h);
+            }
+
+            // 绘制线段
+            function drawLine() {
+                ctx.beginPath(); //新建一条path
+                ctx.moveTo(300, 50); //把画笔移动到指定的坐标
+                ctx.lineTo(400, 50); //绘制一条从当前位置到指定坐标(200, 50)的直线.
+                //闭合路径。会拉一条从当前点到path起始点的直线。如果当前点与起始点重合，则什么都不做
+                ctx.closePath();
+                ctx.stroke(); //绘制路径。
+            }
+
+            // 绘制三角形
+            function drawTri() {
+                ctx.beginPath();
+                ctx.moveTo(450, 20);
+                ctx.lineTo(600, 20);
+                ctx.lineTo(450, 80);
+                ctx.closePath(); //虽然我们只绘制了两条线段，但是closePath会closePath，仍然是一个3角形
+                ctx.stroke(); //描边。stroke不会自动closePath()
+            }
+
+            // 绘制填充三角形
+            function drawFillTri() {
+                ctx.beginPath();
+                ctx.moveTo(620, 20);
+                ctx.lineTo(800, 20);
+                ctx.lineTo(800, 80);
+
+                ctx.fill(); //填充闭合区域。如果path没有闭合，则fill()会自动闭合路径。
+            }
+
+            //绘制圆弧
+            // 以(x, y)为圆心，以r为半径，从 startAngle弧度开始到endAngle弧度结束。anticlosewise是布尔值，true表示逆时针，false表示顺时针。(默认是顺时针)
+            // arc(x, y, r, startAngle, endAngle, anticlockwise):
+            function drawArc() {
+                ctx.beginPath();
+                ctx.arc(900, 30, 50, 0, Math.PI / 2, false);
+                ctx.stroke();
+            }
+
+            function drawArc2() {
+                ctx.beginPath();
+                ctx.arc(i * 2, i * 10, 40, 0, Math.PI / 2, false);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(i * 10, i * 14, 40, 0, -Math.PI / 2, true);
+                ctx.closePath();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(i * 2, i * 20, 40, -Math.PI / 2, Math.PI / 2, false);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(i * 12, i * 19, 40, 0, Math.PI, false);
+                ctx.fill();
+            }
+
+            function drawArc3() {
+                ctx.beginPath();
+                ctx.moveTo(270, 100);
+                //参数1、2：控制点1坐标 参数3、4：控制点2坐标 参数4：圆弧半径
+                ctx.arcTo(200 * 2, 50 * 2, 200 * 2, 200, 100);
+                ctx.lineTo(200 * 2, 200);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.rect(270, 50 * 2, 10, 10);
+                ctx.rect(200 * 2, 50 * 2, 10, 10);
+                //  ctx.rect(200*2, 200*2, 10, 10)
+                ctx.fill();
+            }
+
+            //二次贝塞尔曲线
+            // quadraticCurveTo(cp1x, cp1y, x, y):
+            function drawBse() {
+                ctx.beginPath();
+                ctx.moveTo(700, 200); //起始点
+                var cp1x = 850,
+                    cp1y = 100; //控制点
+                var x = 1000,
+                    y = 260; // 结束点
+                //绘制二次贝塞尔曲线
+                ctx.quadraticCurveTo(cp1x, cp1y, x, y);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.rect(700, 200, 10, 10);
+                ctx.rect(cp1x, cp1y, 10, 10);
+                ctx.rect(x, y, 10, 10);
+                ctx.fill();
+            }
+
+            // 三次贝塞尔曲线
+            // bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)：
+            function drawBsr3() {
+                ctx.beginPath();
+                ctx.moveTo(780, 370); //起始点
+                var cp1x = 740,
+                    cp1y = 230; //控制点1
+                var cp2x = 940,
+                    cp2y = 320; //控制点2
+                var x = 1072,
+                    y = 420; // 结束点
+                //绘制二次贝塞尔曲线
+                ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.rect(780, 370, 10, 10);
+                ctx.rect(cp1x, cp1y, 10, 10);
+                ctx.rect(cp2x, cp2y, 10, 10);
+                ctx.rect(x, y, 10, 10);
+                ctx.fill();
+            }
+
+            //样式和颜色
+            function draw() {
+                for (var i = 0; i < 6; i++) {
+                    for (var j = 0; j < 6; j++) {
+                        ctx.fillStyle =
+                            "rgb(" +
+                            Math.floor(255 - 42.5 * i) +
+                            "," +
+                            Math.floor(255 - 42.5 * j) +
+                            ",0)";
+                        ctx.fillRect(j * 50+300, i * 50+260, 50, 50);
+                    }
+                }
+            }
+                    function randomInt(from, to){
+            return parseInt(Math.random() * (to - from + 1) + from);
+        }
+
+            function draw2(){
+
+
+        for (var i = 0; i < 6; i++){
+            for (var j = 0; j < 6; j++){
+                ctx.strokeStyle = `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
+                ctx.strokeRect(j * 50+300, i * 50+600, 40, 40);
+            }
+        }
+    }
+
+            drawRect(20, 20, 100, 50);
+            drawRectLine(150, 20, 100, 50);
+            drawLine();
+            drawTri();
+            drawFillTri();
+            drawArc();
+            drawArc2();
+            drawArc3();
+            drawBse();
+            drawBsr3();
+            draw();
+            draw2();
+        </script>
+    </body>
+</html>
