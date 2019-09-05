@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>canvas</title>
+    </head>
+
+    <body>
+        <canvas
+            style="border: 1px solid red"
+            width="1200"
+            height="2000"
+            id="tutorial"
+        >
+        </canvas>
+        <script>
+            var i = 10;
+            var canvas = document.getElementById("tutorial");
+            var ctx = canvas.getContext("2d");
+
+            function draw() {
+                //变形矩阵
+                // transform(a, b, c, d, e, f)
+                // a 水平缩放
+                // b 水平偏移
+                // c 垂直缩放
+                // d 垂直缩放
+                // e 水平移动
+                // f 垂直移动
+                ctx.transform(1, 1, 0, 1, 1, 1);
+                ctx.fillRect(50, 50, 100, 100);
+            }
+            draw();
+
+            // function draw2() {
+            //     ctx.beginPath();
+            //     ctx.arc(20, 20, 100, 0, Math.PI * 2);
+            //     ctx.clip();
+            //     ctx.fillStyle = "red";
+            //     ctx.fillRect(20, 20, 100, 100);
+            // }
+            // draw2();
+        </script>
+    </body>
+</html>

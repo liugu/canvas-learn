@@ -6,6 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <title>canvas</title>
     </head>
+
     <body>
         <canvas
             style="border: 1px solid red"
@@ -89,6 +90,21 @@
                 ctx.fill();
             }
 
+            function drawCircle() {
+                for (let i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    ctx.arc(
+                        i * 120 + 800,
+                        500,
+                        60 - i * 10,
+                        0,
+                        Math.PI * 2,
+                        false
+                    );
+                    ctx.fill();
+                }
+            }
+
             function drawArc3() {
                 ctx.beginPath();
                 ctx.moveTo(270, 100);
@@ -161,6 +177,7 @@
                     }
                 }
             }
+
             function randomInt(from, to) {
                 return parseInt(Math.random() * (to - from + 1) + from);
             }
@@ -178,33 +195,75 @@
             }
 
             //绘制文本
-            function drawText(){
-                ctx.font = "100px sans-serif"
+            function drawText() {
+                ctx.font = "100px sans-serif";
                 ctx.fillText("滚滚长江东逝水", 10, 1000);
-                ctx.strokeText("滚滚长江东逝水", 10, 1120)
+                ctx.strokeText("滚滚长江东逝水", 10, 1120);
             }
 
-
             // 绘制图片
-            function drawImg(){
-              var img = new Image();   // 创建一个<img>元素
-              img.src = 'static/images/zxc.png'; // 设置图片源地址
-              img.onload = function(){
-                ctx.drawImage(img, 10, 1200,500,300)
-                let parm = [
-                  230,
-                  100,
-                  200,
-                  200,
-                  550,
-                  1200,
-                  100,
-                  100
-                ];
-                //裁剪
-                ctx.drawImage(img,...parm);
+            function drawImg() {
+                var img = new Image(); // 创建一个<img>元素
+                img.src = "static/images/zxc.png"; // 设置图片源地址
+                img.onload = function() {
+                    ctx.drawImage(img, 10, 1200, 500, 300);
+                    let parm = [230, 100, 200, 200, 550, 1200, 100, 100];
+                    //裁剪
+                    ctx.drawImage(img, ...parm);
+                };
+            }
 
-              }
+            // 状态的保存和恢复
+            function draw3() {
+                ctx.fillRect(0, 0, 150, 150); // 使用默认设置绘制一个矩形
+                ctx.save(); // 保存默认状态
+
+                ctx.fillStyle = "red"; // 在原有配置基础上对颜色做改变
+                ctx.fillRect(15, 15, 120, 120); // 使用新的设置绘制一个矩形
+
+                ctx.save(); // 保存当前状态
+                ctx.fillStyle = "#FFF"; // 再次改变颜色配置
+                ctx.fillRect(30, 30, 90, 90); // 使用新的配置绘制一个矩形
+
+                ctx.restore(); // 重新加载之前的颜色状态
+                ctx.fillRect(45, 45, 60, 60); // 使用上一次的配置绘制一个矩形
+
+                ctx.restore(); // 加载默认颜色配置
+                ctx.fillRect(60, 60, 30, 30); // 使用加载的配置绘制一个矩形
+            }
+
+            //变形
+            function draw4() {
+                ctx.save(); //保存坐原点平移之前的状态
+                ctx.translate(750, 650);
+                ctx.strokeRect(0, 0, 100, 100);
+                ctx.restore(); //恢复到最初状态
+                ctx.translate(960, 800);
+                ctx.fillRect(0, 0, 100, 100);
+            }
+
+            // 旋转坐标轴
+
+            function drawRotate() {
+                ctx.fillStyle = "red";
+                ctx.save();
+
+                ctx.translate(100, 100);
+                ctx.rotate((Math.PI / 180) * 45);
+                ctx.fillStyle = "blue";
+                ctx.fillRect(0, 0, 100, 100);
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(0, 0);
+                ctx.fillRect(0, 0, 50, 50);
+                ctx.restore();
+            }
+
+            //transform(变形矩阵)
+            function drawTransform() {
+                ctx.transform(20, 20, 0, 1, 0, 0);
+                ctx.fillRect(20, 20, 100, 100);
             }
 
             drawRect(20, 20, 100, 50);
@@ -214,6 +273,7 @@
             drawFillTri();
             drawArc();
             drawArc2();
+            drawCircle();
             drawArc3();
             drawBse();
             drawBsr3();
@@ -221,6 +281,10 @@
             draw2();
             drawText();
             drawImg();
+            // draw3();
+            // draw4();
+            // drawRotate();
+            // drawTransform();
         </script>
     </body>
 </html>
