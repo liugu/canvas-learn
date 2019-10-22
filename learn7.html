@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+<canvas id="tutorial1" width="600" height="400"></canvas>
+
+
+<script>
+var ctx;
+function draw(){
+    var canvas = document.getElementById('tutorial1');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    // ctx.transform(1, 1, 0, 1, 0, 0);
+    ctx.transform(10, 0, 0, 0, 0, 0);
+    ctx.fillRect(0, 0, 100, 100);
+}
+draw();
+    </script>
+    
+</body>
+</html>
+

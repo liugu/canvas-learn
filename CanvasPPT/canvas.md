@@ -263,6 +263,524 @@ draw();
 ```
 
 
+<slide class="bg-white alignleft">
+
+## 六、绘制文本
+
+绘制文本的两个方法
+
+1. fillText(text, x, y [, maxWidth]) 在指定的 (x,y) 位置填充指定的文本，绘制的最大宽度是可选的。
+
+2. strokeText(text, x, y [, maxWidth]) 在指定的 (x,y) 位置绘制文本边框，绘制的最大宽度是可选的。
+
+```javascript
+var ctx;
+function draw(){
+    var canvas = document.getElementById('tutorial');
+    if (!canvas.getContext) return;
+    ctx = canvas.getContext("2d");
+    ctx.font = "100px sans-serif"
+    ctx.fillText("天若有情", 10, 100);
+    ctx.strokeText("天若有情", 10, 200)
+}
+draw();
+```
+
+给文本添加样式
+
+1. font = value 当前我们用来绘制文本的样式。这个字符串使用和 CSS font 属性相同的语法。 默认的字体是 10px sans-serif。
+
+2. textAlign = value 文本对齐选项。 可选的值包括：start, end, left, right or center。 默认值是 start。
+
+3. textBaseline = value 基线对齐选项，可选的值包括：top, hanging, middle, alphabetic, ideographic, bottom。默认值是 alphabetic。。
+
+4. direction = value 文本方向。可能的值包括：ltr, rtl, inherit。默认值是 inherit。
+
+
+
+<slide class="bg-white alignleft">
+
+## 七、绘制图片
+
+### 7.1 由零开始创建图片
+
+```javascript
+var img = new Image();   // 创建一个<img>元素
+img.src = 'myImage.png'; // 设置图片源地址
+
+```
+脚本执行后图片开始装载。
+
+绘制img
+```javascript
+// 参数 1：要绘制的 img  
+// 参数 2、3：绘制的 img 在 canvas 中的坐标
+ctx.drawImage(img,0,0); 
+
+```
+
+**注意：** 考虑到图片是从网络加载，如果 drawImage 的时候图片还没有完全加载完成，则什么都不做，个别浏览器会抛异常。所以我们应该保证在 img 绘制完成之后再 drawImage。
+```javascript
+var img = new Image();   // 创建img元素
+img.onload = function(){
+    ctx.drawImage(img, 0, 0)
+}
+img.src = 'myImage.png'; // 设置图片源地址
+```
+
+### 绘制 img 标签元素中的图片
+```html
+<img src="./images/cat.jpg" alt="" width="300"><br>
+<canvas id="tutorial" width="600" height="400"></canvas>
+```
+``` javascript
+function draw(){
+    var canvas = document.getElementById('tutorial');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    var img = document.querySelector("img");
+    ctx.drawImage(img, 0, 0);
+}
+
+document.querySelector("img").onclick = function (){
+    draw();
+}
+```
+第一张图片就是页面中的 <img> 标签：
+
+![](./images/cat.png)
+
+
+### 7.3 缩放图片
+drawImage() 也可以再添加两个参数：
+
+`drawImage(image, x, y, width, height)`
+
+​这个方法多了 2 个参数：width 和 height，这两个参数用来控制 当像 canvas 画入时应该缩放的大小。
+
+
+`ctx.drawImage(img, 0, 0, 400, 200)`
+
+
+### 7.4 切片(slice)
+
+`drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)`
+
+第一个参数和其它的是相同的，都是一个图像或者另一个 canvas 的引用。
+
+其他 8 个参数：
+
+前 4 个是定义图像源的切片位置和大小，后 4 个则是定义切片的目标显示位置和大小。
+
+![](./images/2106688680-54566fa3d81dc_articlex.jpeg)
+
+
+
+<slide class="bg-white alignleft">
+
+## 八、状态的保存和恢复
+
+Saving and restoring state 是绘制复杂图形时必不可少的操作。
+
+save() 和 restore()
+
+save 和 restore 方法是用来保存和恢复 canvas 状态的，都没有参数。
+
+​Canvas 的状态就是当前画面应用的所有样式和变形的一个快照。
+
+1. 关于 save() ：Canvas状态存储在栈中，每当save()方法被调用后，当前的状态就被推送到栈中保存。
+
+一个绘画状态包括：
+ - 当前应用的变形（即移动，旋转和缩放）
+ - strokeStyle, fillStyle, globalAlpha, lineWidth, lineCap, lineJoin, miterLimit, shadowOffsetX, shadowOffsetY, shadowBlur, shadowColor, globalCompositeOperation 的值
+ -  当前的裁切路径（clipping path）
+
+​ **可以调用任意多次 save方法(类似数组的 push())。**
+
+2. 关于restore()：每一次调用 restore 方法，上一个保存的状态就从栈中弹出，所有设定都恢复(类似数组的 pop())。
+
+
+```javascript
+
+var ctx;
+function draw(){
+    var canvas = document.getElementById('tutorial');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+ 
+    ctx.fillRect(0, 0, 150, 150);   // 使用默认设置绘制一个矩形
+    ctx.save();                  // 保存默认状态
+ 
+    ctx.fillStyle = 'red'       // 在原有配置基础上对颜色做改变
+    ctx.fillRect(15, 15, 120, 120); // 使用新的设置绘制一个矩形
+ 
+    ctx.save();                  // 保存当前状态
+    ctx.fillStyle = '#FFF'       // 再次改变颜色配置
+    ctx.fillRect(30, 30, 90, 90);   // 使用新的配置绘制一个矩形
+ 
+    ctx.restore();               // 重新加载之前的颜色状态
+    ctx.fillRect(45, 45, 60, 60);   // 使用上一次的配置绘制一个矩形
+ 
+    ctx.restore();               // 加载默认颜色配置
+    ctx.fillRect(60, 60, 30, 30);   // 使用加载的配置绘制一个矩形
+}
+draw();
+```
+
+
+
+<slide class="bg-white alignleft">
+
+## 九、变形
+
+### 9.1 translate
+`translate(x, y)`
+
+用来移动 canvas 的原点到指定的位置
+
+​translate 方法接受两个参数。x 是左右偏移量，y 是上下偏移量，如右图所示。
+
+在做变形之前先保存状态是一个良好的习惯。大多数情况下，调用 restore 方法比手动恢复原先的状态要简单得多。又如果你是在一个循环中做位移但没有保存和恢复 canvas 的状态，很可能到最后会发现怎么有些东西不见了，那是因为它很可能已经超出 canvas 范围以外了。
+
+​ 注意：translate 移动的是 canvas 的坐标原点(坐标变换)。
+
+![](./images/829832336-5b74dd8e3ad9a_articlex.png)
+
+```javascript
+
+var ctx;
+function draw(){
+    var canvas = document.getElementById('tutorial1');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    ctx.save(); //保存坐原点平移之前的状态
+    ctx.translate(100, 100);
+    ctx.strokeRect(0, 0, 100, 100)
+    ctx.restore(); //恢复到最初状态
+    ctx.translate(220, 220);
+    ctx.fillRect(0, 0, 100, 100)
+}
+draw();
+
+```
+![](./images/1230266743-5b74dd8e3b0ce_articlex.png)
+
+### 9.2 rotate
+
+`rotate(angle)`
+
+旋转坐标轴
+
+这个方法只接受一个参数：旋转的角度(angle)，它是顺时针方向的，以弧度为单位的值。
+
+​ 旋转的中心是坐标原点。
+![](./images/3322150878-5b74dd8e2b6a4_articlex.png)
+
+```javascript
+var ctx;
+function draw(){
+  var canvas = document.getElementById('tutorial1');
+  if (!canvas.getContext) return;
+  var ctx = canvas.getContext("2d");
+ 
+  ctx.fillStyle = "red";
+  ctx.save();
+ 
+  ctx.translate(100, 100);
+  ctx.rotate(Math.PI / 180 * 45);
+  ctx.fillStyle = "blue";
+  ctx.fillRect(0, 0, 100, 100);
+  ctx.restore();
+ 
+  ctx.save();
+  ctx.translate(0, 0);
+  ctx.fillRect(0, 0, 50, 50)
+  ctx.restore();
+}
+draw();
+```
+![](./images/1819968878-5b74dd8e1e770_articlex.png)
+
+### 9.3 scale (缩放)
+
+`scala(x,y)`
+
+我们用它来增减图形在 canvas 中的像素数目，对形状，位图进行缩小或者放大。
+
+scale方法接受两个参数。x,y 分别是横轴和纵轴的缩放因子，它们都必须是正值。值比 1.0 小表示缩 小，比 1.0 大则表示放大，值为 1.0 时什么效果都没有。
+
+​ 默认情况下，canvas 的 1 单位就是 1 个像素。举例说，如果我们设置缩放因子是 0.5，1 个单位就变成对应 0.5 个像素，这样绘制出来的形状就会是原先的一半。同理，设置为 2.0 时，1 个单位就对应变成了 2 像素，绘制的结果就是图形放大了 2 倍。
+
+
+### 9.4 transform (变形矩阵)
+
+`transform(a, b, c, d, e, f)`
+
+![](./images/2958376259-5b74dd8e1519articlex.png)
+
+1. a: Horizontal scaling.(水平伸缩)
+2. b: Horizontal skewing.(水平倾斜)
+3. c: Vertical skewing.(垂直偏移)
+4. d: Vertical scaling. (垂直倾斜
+5. e: Horizontal moving. (水平移动)
+6. f: Vertical moving. （垂直移动）
+
+```javascript
+var ctx;
+function draw(){
+    var canvas = document.getElementById('tutorial1');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    ctx.transform(1, 1, 0, 1, 0, 0);
+    ctx.fillRect(0, 0, 100, 100);
+}
+draw();
+```
+![](./images/489430190-5b74dd8e17ad2_articlex.png)
+
+
+
+<slide class="bg-white alignleft">
+
+## 十、合成
+
+在前面的所有例子中、，我们总是将一个图形画在另一个之上，对于其他更多的情况，仅仅这样是远远不够的。比如，对合成的图形来说，绘制顺序会有限制。不过，我们可以利用 globalCompositeOperation 属性来改变这种状况。
+
+`globalCompositeOperation = type`
+
+```javascript
+var ctx;
+function draw(){
+    var canvas = document.getElementById('tutorial1');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+ 
+    ctx.fillStyle = "blue";
+    ctx.fillRect(0, 0, 200, 200);
+ 
+    ctx.globalCompositeOperation = "source-over"; //全局合成操作
+    ctx.fillStyle = "red";
+    ctx.fillRect(100, 100, 200, 200);
+}
+draw();
+
+```
+
+**注：**下面的展示中，蓝色是原有的，红色是新的。
+
+type 是下面 13 种字符串值之一：
+
+1. 这是默认设置，新图像会覆盖在原有图像。
+![](./images/1858023544-5b74dd8e0813d.png)
+
+2. source-in
+
+仅仅会出现新图像与原来图像重叠的部分，其他区域都变成透明的。(包括其他的老图像区域也会透明)
+
+![](./images/2183873141-5b74dd8e02a4a_articlex.png)
+
+3. source-out
+
+仅仅显示新图像与老图像没有重叠的部分，其余部分全部透明。(老图像也不显示)
+
+![](./images/2402253130-5b74dd8dd7621_articlex.png)
+
+4. source-atop
+新图像仅仅显示与老图像重叠区域。老图像仍然可以显示。
+
+![](./images/1206278247-5b74dd8dd9036_articlex.png)
+
+5. destination-over
+
+新图像会在老图像的下面。
+
+![](./images/2492190378-5b74dd8dca608_articlex.png)
+
+6. destination-in
+仅仅新老图像重叠部分的老图像被显示，其他区域全部透明。
+
+![](./images/284693590-5b74dd8dc7f3e_articlex.png)
+
+7. destination-out
+
+仅仅老图像与新图像没有重叠的部分。 注意显示的是老图像的部分区域。
+
+![](./images/1921976761-5b74dd8daba2d_articlex.png)
+
+8. destination-atop
+老图像仅仅仅仅显示重叠部分，新图像会显示在老图像的下面。
+
+![](./images/4055109887-5b74dd8db283c_articlex.png)
+
+
+9. lighter
+新老图像都显示，但是重叠区域的颜色做加处理。
+
+![](./images/1200224117-5b74dd8d9453e_articlex.png)
+
+10. darken
+保留重叠部分最黑的像素。(每个颜色位进行比较，得到最小的)
+
+![](./images/3835256030-5b74dd8d92ba5_articlex.png)
+
+11. lighten
+保证重叠部分最量的像素。(每个颜色位进行比较，得到最大的)
+
+```
+blue: #0000ff
+red: #ff0000
+```
+
+![](./images/1617768463-5b74dd8d99843_articlex.png)
+
+12. xor
+
+重叠部分会变成透明。
+
+![](./images/2521026104-5b74dd8d6abd6_articlex.png)
+
+13. copy
+
+只有新图像会被保留，其余的全部被清除(边透明)。
+
+![](./images/2454891415-5b74dd8d67aec_articlex.png)
+
+
+<slide class="bg-white alignleft">
+
+## 十一、裁剪路径
+
+`clip()`
+
+把已经创建的路径转换成裁剪路径。
+
+​
+裁剪路径的作用是遮罩。只显示裁剪路径内的区域，裁剪路径外的区域会被隐藏。
+
+​
+**注意**：clip() 只能遮罩在这个方法调用之后绘制的图像，如果是 clip() 方法调用之前绘制的图像，则无法实现遮罩。
+```javascript
+
+var ctx;
+function draw(){
+    var canvas = document.getElementById('tutorial1');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+ 
+    ctx.beginPath();
+    ctx.arc(20,20, 100, 0, Math.PI * 2);
+    ctx.clip(); 
+ 
+    // ctx.fillStyle = "pink";
+    // ctx.fillRect(20, 20, 100,100);
+}
+draw();
+
+```
+![](./images/20191022233306.png)
+
+<slide class="bg-white alignleft">
+
+## 十二、动画
+
+### 动画的基本步骤
+
+1. **清空** canvas 再绘制每一帧动画之前，需要清空所有。清空所有最简单的做法就是 clearRect() 方法。
+
+2. **保存** canvas 状态 如果在绘制的过程中会更改 canvas 的状态(颜色、移动了坐标原点等),又在绘制每一帧时都是原始状态的话，则最好保存下 canvas 的状态
+
+3. **绘制动画图形**这一步才是真正的绘制动画帧
+
+4. **恢复** canvas 状态如果你前面保存了 canvas 状态，则应该在绘制完成一帧之后恢复 canvas 状态。
+
+### 控制动画
+
+我们可用通过 canvas 的方法或者自定义的方法把图像会知道到 canvas 上。正常情况，我们能看到绘制的结果是在脚本执行结束之后。例如，我们不可能在一个 for 循环内部完成动画。
+
+也就是，为了执行动画，我们需要一些可以定时执行重绘的方法。
+
+一般用到下面三个方法：
+
+1. setInterval()
+2. setTimeout()
+3. requestAnimationFrame()
+
+通常我们使用 requestAnimationFrame ，它有三个优势：
+
+**CPU节能**：使用setTimeout实现的动画，当页面被隐藏或最小化时，setTimeout 仍然在后台执行动画任务，由于此时页面处于不可见或不可用状态，刷新动画是没有意义的，完全是浪费CPU资源。而requestAnimationFrame则完全不同，当页面处理未激活的状态下，该页面的屏幕刷新任务也会被系统暂停，因此跟着系统步伐走的requestAnimationFrame也会停止渲染，当页面被激活时，动画就从上次停留的地方继续执行，有效节省了CPU开销。
+
+**函数节流：**在高频率事件(resize,scroll等)中，为了防止在一个刷新间隔内发生多次函数执行，使用requestAnimationFrame可保证每个刷新间隔内，函数只被执行一次，这样既能保证流畅性，也能更好的节省函数执行的开销。
+
+**优雅降级**：由于兼容性问题，需要降级对接口进行封装，优先使用高级特性，再根据浏览器不同情况进行回退，直到只能使用settimeout。参考[GitHub](https://github.com/darius/requestAnimationFrame）
+
+
+### 案例：太阳系
+
+```javascript
+let sun;
+let earth;
+let moon;
+let ctx;
+function init(){
+    sun = new Image();
+    earth = new Image();
+    moon = new Image();
+    sun.src = "sun.png";
+    earth.src = "earth.png";
+    moon.src = "moon.png";
+ 
+    let canvas = document.querySelector("#solar");
+    ctx = canvas.getContext("2d");
+ 
+    sun.onload = function (){
+        draw()
+    }
+ 
+}
+init();
+function draw(){
+    ctx.clearRect(0, 0, 300, 300); //清空所有的内容
+    /*绘制 太阳*/
+    ctx.drawImage(sun, 0, 0, 300, 300);
+ 
+    ctx.save();
+    ctx.translate(150, 150);
+ 
+    //绘制earth轨道
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(255,255,0,0.5)";
+    ctx.arc(0, 0, 100, 0, 2 * Math.PI)
+    ctx.stroke()
+ 
+    let time = new Date();
+    //绘制地球
+    ctx.rotate(2 * Math.PI / 60 * time.getSeconds() + 2 * Math.PI / 60000 * time.getMilliseconds())
+    ctx.translate(100, 0);
+    ctx.drawImage(earth, -12, -12)
+ 
+    //绘制月球轨道
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(255,255,255,.3)";
+    ctx.arc(0, 0, 40, 0, 2 * Math.PI);
+    ctx.stroke();
+ 
+    //绘制月球
+    ctx.rotate(2 * Math.PI / 6 * time.getSeconds() + 2 * Math.PI / 6000 * time.getMilliseconds());
+    ctx.translate(40, 0);
+    ctx.drawImage(moon, -3.5, -3.5);
+    ctx.restore();
+ 
+    requestAnimationFrame(draw);
+}
+```
+![](./images/796853783-5b74dd8f41e21_articlex.gif)
+
+<slide class="bg-white aligncenter">
+
+## 谢谢观看
+
+
+
 
 
 
