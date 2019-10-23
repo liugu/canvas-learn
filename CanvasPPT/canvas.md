@@ -2,7 +2,6 @@ title: Canvas基础
 speaker: 刘固
 port: 8088
 plugins:
-    - echarts
 
 <slide class="bg-white aligncenter">
 
@@ -262,6 +261,276 @@ function draw(){
 draw();
 ```
 
+### 4.2 绘制三角形边框
+```javascript
+function draw(){
+    var canvas = document.getElementById('tutorial');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(50, 50);
+    ctx.lineTo(200, 50);
+    ctx.lineTo(200, 200);
+  	ctx.closePath(); //虽然我们只绘制了两条线段，但是closePath会closePath，仍然是一个3角形
+    ctx.stroke(); //描边。stroke不会自动closePath()
+}
+draw();
+```
+
+![](./images/20099429.jpg)
+
+### 4.3 绘制填充三角形
+
+```javascript
+function draw(){
+    var canvas = document.getElementById('tutorial');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(50, 50);
+    ctx.lineTo(200, 50);
+    ctx.lineTo(200, 200);
+   
+    ctx.fill(); //填充闭合区域。如果path没有闭合，则fill()会自动闭合路径。
+}
+draw();
+```
+![](./images/83072674.jpg)
+
+## 4.4 绘制圆弧
+
+`arc(x, y, r, startAngle, endAngle, anticlockwise)`
+
+以(x, y)为圆心，以r为半径，从 startAngle弧度开始到endAngle弧度结束。anticlosewise是布尔值，true表示逆时针，false表示顺时针。(默认是顺时针)
+
+注意：
+1. 这里的度数都是弧度。
+`radians=(Math.PI/180)*degrees   //角度转换成弧度`
+
+案例：
+```javascript
+function draw(){
+    var canvas = document.getElementById('tutorial');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(50, 50, 40, 0, Math.PI / 2, false);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(150, 50, 40, 0, -Math.PI / 2, true);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(50, 150, 40, -Math.PI / 2, Math.PI / 2, false);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(150, 150, 40, 0, Math.PI, false);
+    ctx.fill();
+
+}
+draw();
+
+```
+
+![](./images/62078705.jpg)
+
+<slide class="bg-white alignleft">
+
+## 五、添加样式和颜色
+
+​ 在前面的绘制矩形章节中，只用到了默认的线条和颜色。
+
+​ 如果想要给图形上色，有两个重要的属性可以做到。
+
+1. `fillStyle = color`
+
+设置图形的填充颜色
+
+2. `strokeStyle = color`
+
+设置图形轮廓的颜色
+
+> 备注：
+1. `color` 可以是表示 `css` 颜色值的字符串、渐变对象或者图案对象。
+2. 默认情况下，线条和填充颜色都是黑色。
+3. 一旦您设置了 `strokeStyle` 或者 `fillStyle` 的值，那么这个新值就会成为新绘制的图形的默认值。如果你要给每个图形上不同的颜色，你需要重新设置 `fillStyle` 或 `strokeStyle` 的值
+
+### fillStyle 给图形填充颜色
+```javascript
+function draw(){
+  var canvas = document.getElementById('tutorial');
+  if (!canvas.getContext) return;
+  var ctx = canvas.getContext("2d");
+  for (var i = 0; i < 6; i++){
+    for (var j = 0; j < 6; j++){
+      ctx.fillStyle = 'rgb(' + Math.floor(255 - 42.5 * i) + ',' +
+        Math.floor(255 - 42.5 * j) + ',0)';
+      ctx.fillRect(j * 50, i * 50, 50, 50);
+    }
+  }
+}
+draw();
+
+```
+
+![](./images/2505008676-5b74dd8ebad41_articlex.png)
+
+### strokeStyle 
+```javascript
+function draw(){
+    var canvas = document.getElementById('tutorial');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    for (var i = 0; i < 6; i++){
+        for (var j = 0; j < 6; j++){
+            ctx.strokeStyle = `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
+            ctx.strokeRect(j * 50, i * 50, 40, 40);
+        }
+    }
+}
+draw();
+/**
+ 返回随机的 [from, to] 之间的整数(包括from，也包括to)
+ */
+function randomInt(from, to){
+    return parseInt(Math.random() * (to - from + 1) + from);
+}
+
+```
+![](./images/3288535670-5b74dd8ea12d9_articlex.png)
+
+
+### Transparency(透明度)
+globalAlpha = transparencyValue
+
+​ 这个属性影响到 canvas 里所有图形的透明度，有效的值范围是 0.0 （完全透明）到 1.0（完全不透明），默认是 1.0。
+
+​ globalAlpha 属性在需要绘制大量拥有相同透明度的图形时候相当高效。不过，我认为使用rgba()设置透明度更加好一些。
+
+
+### line style
+
+#### lineWidth = value
+
+线宽。只能是正值。默认是1.0。
+
+起始点和终点的连线为中心，上下各占线宽的一半
+```javascript
+ctx.beginPath();
+ctx.moveTo(10, 10);
+ctx.lineTo(100, 10);
+ctx.lineWidth = 10;
+ctx.stroke();
+
+ctx.beginPath();
+ctx.moveTo(110, 10);
+ctx.lineTo(160, 10)
+ctx.lineWidth = 20;
+ctx.stroke()
+
+```
+![](./images/29873575.jpg)
+
+#### lineCap = type
+
+线条末端样式。
+
+1. butt：线段末端以方形结束
+
+2. round：线段末端以圆形结束
+
+3. square：线段末端以方形结束，但是增加了一个宽度和线段相同，高度是线段厚度一半的矩形区域。
+
+```javascript
+var lineCaps = ["butt", "round", "square"];
+
+for (var i = 0; i < 3; i++){
+    ctx.beginPath();
+    ctx.moveTo(20 + 30 * i, 30);
+    ctx.lineTo(20 + 30 * i, 100);
+    ctx.lineWidth = 20;
+    ctx.lineCap = lineCaps[i];
+    ctx.stroke();
+}
+
+ctx.beginPath();
+ctx.moveTo(0, 30);
+ctx.lineTo(300, 30);
+
+ctx.moveTo(0, 100);
+ctx.lineTo(300, 100)
+
+ctx.strokeStyle = "red";
+ctx.lineWidth = 1;
+ctx.stroke();
+
+```
+![](./images/41486892.jpg)
+
+#### lineJoin = type
+
+同一个path内，设定线条与线条间接合处的样式。
+
+共有3个值round, bevel 和 miter：
+
+1. round
+
+通过填充一个额外的，圆心在相连部分末端的扇形，绘制拐角的形状。 圆角的半径是线段的宽度。
+
+2. bevel
+
+在相连部分的末端填充一个额外的以三角形为底的区域， 每个部分都有各自独立的矩形拐角。
+
+3. miter(默认)
+
+```javascript
+function draw(){
+    var canvas = document.getElementById('tutorial');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+
+    var lineJoin = ['round', 'bevel', 'miter'];
+    ctx.lineWidth = 20;
+
+    for (var i = 0; i < lineJoin.length; i++){
+        ctx.lineJoin = lineJoin[i];
+        ctx.beginPath();
+        ctx.moveTo(50, 50 + i * 50);
+        ctx.lineTo(100, 100 + i * 50);
+        ctx.lineTo(150, 50 + i * 50);
+        ctx.lineTo(200, 100 + i * 50);
+        ctx.lineTo(250, 50 + i * 50);
+        ctx.stroke();
+    }
+
+}
+draw();
+
+```
+![](./images/5058353.jpg)
+
+#### 虚线
+
+用 `setLineDash` 方法和 `lineDashOffset` 属性来制定虚线样式. `setLineDash` 方法接受一个数组，来指定线段与间隙的交替；`lineDashOffset` 属性设置起始偏移量。
+
+```javascript
+function draw(){
+    var canvas = document.getElementById('tutorial');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    
+    ctx.setLineDash([20, 5]);  // [实线长度, 间隙长度]
+    ctx.lineDashOffset = -0;
+    ctx.strokeRect(50, 50, 210, 210);
+}
+draw();
+
+```
+
+
 
 <slide class="bg-white alignleft">
 
@@ -285,6 +554,8 @@ function draw(){
 }
 draw();
 ```
+
+![](./images/87968030.jpg)
 
 给文本添加样式
 
@@ -516,7 +787,7 @@ scale方法接受两个参数。x,y 分别是横轴和纵轴的缩放因子，�
 
 `transform(a, b, c, d, e, f)`
 
-![](./images/2958376259-5b74dd8e1519articlex.png)
+![](./images/89391901.jpg)
 
 1. a: Horizontal scaling.(水平伸缩)
 2. b: Horizontal skewing.(水平倾斜)
@@ -777,7 +1048,7 @@ function draw(){
 
 <slide class="bg-white aligncenter">
 
-## 谢谢观看
+## Thanks
 
 
 
