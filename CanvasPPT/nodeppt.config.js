@@ -28,6 +28,30 @@ module.exports = () => ({
         /* string or regex */
     ],
 
+    // rules:[
+    //     {
+    //         test: '/\.(png|jpg|gif|svg)$/',
+    //         loader: 'file-loader',
+    //         options: {
+    //             name: '../img/[name].[ext]?[hash]'
+    //         }
+    //     }
+    // ],
+
+    // rules: [{    //rules里面可以配置各种文件处理的规则
+    //     test: '/\.jpg|png|jpeg|gif$/',     //匹配以jpg|png|jpeg|gif结尾的文件
+    //     use: [{             //使用的loader
+    //                loader: 'url-loader',    //这里用url-loader来处理图片
+    //              options: {                
+    //                  name: '[name].[ext]?[hash]',     
+    //                  publicPath: './dist/img',        
+    //                  outputPath: 'img',               
+    //                    limit: 200   //  当打包的图片文件小于204800Byte时, 将图片编译成base64的形式，进行打包。如果大于204800Byte时，则使用file-loader进行打包
+    //              }
+    //        },
+    //     ]
+    // }],
+
     // sourceMap for production build?
     productionSourceMap: true,
 

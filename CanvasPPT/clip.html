@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>裁剪路径</title>
+</head>
+<body>
+    
+    <canvas id="demo" width="600" height="400"></canvas>
+</body>
+<script>
+var ctx;
+function draw(){
+    var canvas = document.getElementById('demo');
+    if (!canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+ 
+    ctx.beginPath();
+
+    // 
+    ctx.arc(20,20, 100, 0, Math.PI*2);
+    ctx.clip(); 
+    // ctx.stroke();
+
+    // 一个正方形,裁剪后
+    ctx.fillStyle = "pink";
+    ctx.fillRect(20, 20, 100,100);
+}
+draw();
+</script>
+</html>
